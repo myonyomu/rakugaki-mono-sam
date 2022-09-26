@@ -1,1 +1,0 @@
-https://dev.classmethod.jp/articles/20170816-sam-local/
