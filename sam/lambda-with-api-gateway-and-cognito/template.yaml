@@ -7,6 +7,15 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
   lambda-with-api-gateway-and-cognito
 
+Parameters:
+  StageName:
+    Type: String
+    Default: dev
+  HttpApiUserPoolArn:
+    Type: String
+  HttpApiUserPoolId:
+    Type: String
+
 # Transform section specifies one or more macros that AWS CloudFormation uses to process your template
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
 Transform:
@@ -18,13 +27,48 @@ Transform:
 Globals:
   Function:
     Tracing: Active
-  Api:
-    TracingEnabled: True
 
 Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  HttpApiGatewayLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /test/sam-with-cognito
+      RetentionInDays: 30
+  HttpApiGateway:
+    Type: AWS::Serveless::HttpApi
+    Properties:
+      ApiId: lambda-with-api-gateway-and-cognito
+      StageName: ${StageName}
+      AccessLogSetting:
+        DestinationArn: !GetAtt HttpApiGatewayLogGroup.Arn
+        Format: "\
+          {\
+          'requestId':'$context.requestId', \
+          'ip': '$context.identity.sourceIp', \
+          'caller':'$context.identity.caller', \
+          'user':'$context.identity.user',\
+          'requestTime':'$context.requestTime',\
+          'xrayTraceId':'$context.xrayTraceId',\
+          'wafResponseCode':'$context.wafResponseCode',\
+          'httpMethod':'$context.httpMethod',\
+          'resourcePath':'$context.resourcePath',\
+          'status':'$context.status',\
+          'protocol':'$context.protocol',\
+          'responseLength':'$context.responseLength'\
+          }"
+      Auth:
+        Authorizers:
+          CognitoAuth:
+            IdentitySource: $request.header.Authorization
+            JwtConfiguration:
+              audience:
+                - !Ref HttpApiUserPoolArn
+              issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${HttpApiUserPoolId}
+        DefaultAuthorizer: CognitoAuth
+  
   # This is a Lambda function config associated with the source code: get-by-id.js
   getByIdFunction:
     Type: AWS::Serverless::Function
@@ -37,8 +81,8 @@ Resources:
       Timeout: 100
       Description: A simple example includes a HTTP get method to get one item by id from a DynamoDB table.
       Events:
-        Api:
-          Type: Api
+        HttpApi:
+          Type: HttpApi
           Properties:
             Path: /{id}
             Method: GET
@@ -47,5 +91,5 @@ Resources:
 
 Outputs:
   WebEndpoint:
-    Description: "API Gateway endpoint URL for Prod stage"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Description: "API Gateway endpoint URL for dev stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/dev/"
