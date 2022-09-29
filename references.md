@@ -14,4 +14,5 @@
   - チュートリアル
 - [Python の単体テストで AWS のモックをサクッと導入したいなら moto を使え！](https://zenn.dev/todoker/articles/python-unittest-moto)
   - motoの使い方のパターン(Decorator, Context Manager, Raw)
-
+- [moto ✕ Rspec で Ruby で書いたライブラリをテストするばい（moto チュートリアル 弐）](https://inokara.hateblo.jp/entry/2017/04/21/070000)
+  - Stand-alone Server Modeでのmoto起動
