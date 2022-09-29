@@ -8,5 +8,5 @@ sam local invoke ${function_name} --env-vars env.json
 ```
 ## deploy
 ```shell
-sam deploy --parameter-overrides StageName=${your_api_stage_name} HttpApiUserPoolArn=${your_user_pool_arn} HttpApiUserPoolId=${your_user_pool_id}
+sam deploy --parameter-overrides StageName=${your_api_stage_name} HttpApiUserPoolArn=${your_user_pool_arn} HttpApiUserPoolId=${your_user_pool_id} StageName=${your_stage_name(Optional)}
 ```

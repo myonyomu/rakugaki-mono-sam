@@ -35,13 +35,13 @@ Resources:
   HttpApiGatewayLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: /test/sam-with-cognito
+      LogGroupName: !Sub /sam-with-cognito/${StageName}
       RetentionInDays: 30
   HttpApiGateway:
     Type: AWS::Serveless::HttpApi
     Properties:
       ApiId: lambda-with-api-gateway-and-cognito
-      StageName: ${StageName}
+      StageName: !Ref ${StageName}
       AccessLogSetting:
         DestinationArn: !GetAtt HttpApiGatewayLogGroup.Arn
         Format: "\
