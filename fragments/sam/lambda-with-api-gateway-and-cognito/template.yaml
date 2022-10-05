@@ -15,7 +15,10 @@ Parameters:
     Type: String
   HttpApiUserPoolId:
     Type: String
-
+  IsDev:
+    Type: Boolean
+    default: true
+  
 # Transform section specifies one or more macros that AWS CloudFormation uses to process your template
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
 Transform:
@@ -66,7 +69,8 @@ Resources:
             JwtConfiguration:
               audience:
                 - !Ref HttpApiUserPoolArn
-              issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${HttpApiUserPoolId}
+              issuer:
+                !If [!Ref IsDev, !Sub http://localhost:5000/${HttpApiUserPoolId}, !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${HttpApiUserPoolId}]
         DefaultAuthorizer: CognitoAuth
   
   # This is a Lambda function config associated with the source code: get-by-id.js
