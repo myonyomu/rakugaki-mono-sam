@@ -1,0 +1,14 @@
+{
+  "name": "moto-sam-sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "setup.js",
+  "scripts": {
+    "test": "node setup.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.183.0"
+  }
+}

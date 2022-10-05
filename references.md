@@ -4,6 +4,12 @@
   - motoを利用したMock Testに関してはp.74から
   - sam localの利用についてはp.96から
 
+# AWS SDK for JavaScript Reference
+async-awaitで書きたかったのでV3利用。
+
+https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/index.html
+
+
 # moto
 ## 公式
 - [GitHub](https://github.com/spulec/moto)
