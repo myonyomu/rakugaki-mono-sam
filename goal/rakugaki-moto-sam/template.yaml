@@ -1,0 +1,110 @@
+# This is the SAM template that represents the architecture of your serverless application
+# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-template-basics.html
+
+# The AWSTemplateFormatVersion identifies the capabilities of the template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  lambda-with-api-gateway-and-cognito
+
+Parameters:
+  StageName:
+    Type: String
+    Default: dev
+  HttpApiUserPoolArn:
+    Type: String
+  HttpApiUserPoolId:
+    Type: String
+  IsDev:
+    Type: String
+    AllowedValues: 
+      - "yes"
+      - "no"
+    Default: "yes"
+Conditions:
+  IsDevCondition:
+    !Equals
+      - !Ref IsDev
+      - "yes"
+  
+# Transform section specifies one or more macros that AWS CloudFormation uses to process your template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
+Transform:
+- AWS::Serverless-2016-10-31
+
+# Resources declares the AWS resources that you want to include in the stack
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Tracing: Active
+
+Resources:
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  HttpApiGatewayLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /sam-with-cognito/${StageName}
+      RetentionInDays: 30
+  HttpApiGateway:
+    Type: AWS::Serveless::HttpApi
+    Properties:
+      ApiId: lambda-with-api-gateway-and-cognito
+      StageName: !Ref ${StageName}
+      AccessLogSetting:
+        DestinationArn: !GetAtt HttpApiGatewayLogGroup.Arn
+        Format: "\
+          {\
+          'requestId':'$context.requestId', \
+          'ip': '$context.identity.sourceIp', \
+          'caller':'$context.identity.caller', \
+          'user':'$context.identity.user',\
+          'requestTime':'$context.requestTime',\
+          'xrayTraceId':'$context.xrayTraceId',\
+          'wafResponseCode':'$context.wafResponseCode',\
+          'httpMethod':'$context.httpMethod',\
+          'resourcePath':'$context.resourcePath',\
+          'status':'$context.status',\
+          'protocol':'$context.protocol',\
+          'responseLength':'$context.responseLength'\
+          }"
+      Auth:
+        Authorizers:
+          CognitoAuth:
+            IdentitySource: $request.header.Authorization
+            JwtConfiguration:
+              audience:
+                - !Ref HttpApiUserPoolArn
+              issuer:
+                - !If
+                  - !Ref IsDevCondition,
+                  - !Sub http://localhost:5000/${HttpApiUserPoolId}
+                  - !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${HttpApiUserPoolId}
+        DefaultAuthorizer: CognitoAuth
+  
+  # This is a Lambda function config associated with the source code: get-by-id.js
+  getByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-by-id.getByIdHandler
+      Runtime: nodejs16.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP get method to get one item by id from a DynamoDB table.
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /{id}
+            Method: GET
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for dev stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/dev/"
