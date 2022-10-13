@@ -1,2 +1,4 @@
 node_modules
 env.json
+__tests__/localenv/resources/tmp.env.json
+.aws-sam

@@ -11,8 +11,8 @@
         "jest": "^26.6.3"
     },
     "scripts": {
-        "pretest": "docker run --rm -d -p 5000:5000 --name cognito-idp-local motoserver/moto:latest cognito-idp && node __tests__/localenv/setup/setup.js",
-        "test": "jest",
-        "postttest": "docker container stop cognito-idp-local"
+        "pretest": "docker run --rm -d -p 5000:5000 --name cognito-idp-local motoserver/moto:latest cognito-idp && node __tests__/localenv/helper/setup/handler.js",
+        "test": "(npm run sam-local&) && jest",
+        "posttest": "docker container stop cognito-idp-local"
     }
 }
