@@ -8,6 +8,7 @@
 
 - Setup
 ```shell
+npm install
 npm run start-cognito-by-moto
 npm run mock-cognito
 npm run start-sam-local
