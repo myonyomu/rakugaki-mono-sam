@@ -8,11 +8,13 @@
     },
     "devDependencies": {
         "@aws-sdk/client-cognito-identity-provider": "^3.185.0",
+        "got": "^11.8.3",
         "jest": "^26.6.3"
     },
     "scripts": {
-        "pretest": "docker run --rm -d -p 5000:5000 --name cognito-idp-local motoserver/moto:latest cognito-idp && node __tests__/localenv/helper/setup/handler.js",
-        "test": "(npm run sam-local&) && jest",
+        "sam-local": "sam local start-api -n __tests__/localenv/resources/tmp.env.json",
+        "pretest": "docker run --rm -d -p 5000:5000 --name cognito-idp-local motoserver/moto:latest cognito-idp && node __tests__/localenv/helper/setup/handler.js && (npm run sam-local&)",
+        "test": "jest",
         "posttest": "docker container stop cognito-idp-local"
     }
 }

@@ -1,0 +1,39 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /{id}",
+  "rawPath": "/1",
+  "rawQueryString": "",
+  "cookies": [],
+  "headers": {
+    "User-Agent": "got (https://github.com/sindresorhus/got)",
+    "Authorization": "Bearer {id-token-or-access-token}",
+    "Accept": "application/json",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Host": "127.0.0.1:3000",
+    "Connection": "close",
+    "X-Forwarded-Proto": "http",
+    "X-Forwarded-Port": "3000"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "1234567890",
+    "http": {
+      "method": "GET",
+      "path": "/1",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "127.0.0.1",
+      "userAgent": "Custom User Agent String"
+    },
+    "requestId": "81568788-c54b-4bb1-8d6e-e4672f733397",
+    "routeKey": "GET /{id}",
+    "stage": "$default",
+    "time": "14/Oct/2022:09:29:54 +0000",
+    "timeEpoch": 1665739794,
+    "domainName": "localhost",
+    "domainPrefix": "localhost"
+  },
+  "body": "",
+  "pathParameters": { "id": "1" },
+  "stageVariables": null,
+  "isBase64Encoded": false
+}
