@@ -12,9 +12,10 @@
         "jest": "^26.6.3"
     },
     "scripts": {
-        "sam-local": "sam local start-api -n __tests__/localenv/resources/tmp.env.json",
-        "pretest": "docker run --rm -d -p 5000:5000 --name cognito-idp-local motoserver/moto:latest cognito-idp && node __tests__/localenv/helper/setup/handler.js && (npm run sam-local&)",
+        "start-sam-local": "sam local start-api -n __tests__/localenv/resources/tmp.env.json",
+        "start-cognito-by-moto": "docker run --rm -d -p 5000:5000 --name cognito-idp-local motoserver/moto:latest cognito-idp",
+        "mock-cognito": "node __tests__/localenv/helper/setup/handler.js",
         "test": "jest",
-        "posttest": "docker container stop cognito-idp-local"
+        "close-moto": "docker container stop cognito-idp-local"
     }
 }
