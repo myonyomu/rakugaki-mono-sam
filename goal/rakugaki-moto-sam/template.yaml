@@ -64,7 +64,7 @@ Resources:
           'status':'$context.status',\
           'latency': '$context.responseLatency', \
           'integrationLatency': '$context.integrationLatency',\
-          'error': '$context.integrationError'
+          'error': '$context.integrationError' \
           }"
       DefaultRouteSettings:
         StageName: '$default'
