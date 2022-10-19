@@ -58,14 +58,20 @@ Resources:
           'caller':'$context.identity.caller', \
           'user':'$context.identity.user',\
           'requestTime':'$context.requestTime',\
-          'xrayTraceId':'$context.xrayTraceId',\
-          'wafResponseCode':'$context.wafResponseCode',\
           'httpMethod':'$context.httpMethod',\
-          'resourcePath':'$context.resourcePath',\
+          'resourcePath':'$context.path',\
+          'integrationStatus': '$context.integrationStatus', \
           'status':'$context.status',\
-          'protocol':'$context.protocol',\
-          'responseLength':'$context.responseLength'\
+          'latency': '$context.responseLatency', \
+          'integrationLatency': '$context.integrationLatency',\
+          'error': '$context.integrationError'
           }"
+      DefaultRouteSettings:
+        StageName: '$default'
+        RouteSettings:
+          DataTraceEnabled: true
+          DatailedMetricsEnabled: true
+          LoggingLevel: INFO
       Auth:
         Authorizers:
           CognitoAuth:
